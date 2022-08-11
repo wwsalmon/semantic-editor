@@ -22,11 +22,13 @@ export default function Home() {
         use.load().then(model => {
             setStatus("computing embeddings... (2/2)")
             model.embed(splitStrings).then(embeddingsTensor => {
-                const splitDoc = splitStrings
-                    .map((d, i) => ({index: i, text: d, embedding: embeddingsTensor.arraySync()[i]}))
-                    .filter(d => d.embedding);
-                setSplitDoc(splitDoc);
-                setStatus("ready");
+                embeddingsTensor.array().then(arr => {
+                    const splitDoc = splitStrings
+                        .filter(d => d)
+                        .map((d, i) => ({index: i, text: d, embedding: arr[i]}));
+                    setSplitDoc(splitDoc);
+                    setStatus("ready");
+                })
             });
         });
     }
@@ -39,14 +41,18 @@ export default function Home() {
                 setStatus("computing similarities... (3/3)")
                 const embeddings = embeddingsTensor.arraySync();
                 const searchEmbedding = embeddings[0];
-                const scores = splitDoc.map(d => similarity(d.embedding, searchEmbedding));
+                const scores = splitDoc.map((d, i) => {
+                    const score = similarity(d.embedding, searchEmbedding);
+                    console.log(score, d, i);
+                    return score;
+                });
                 setScores(scores);
                 setStatus("done");
             });
         });
     }
 
-    const sortedSplitDoc = scores ? splitDoc.sort((a, b) => scores[b.index] - scores[a.index]) : splitDoc;
+    const sortedSplitDoc = scores ? [...splitDoc].sort((a, b) => scores[b.index] - scores[a.index]) : splitDoc;
 
     return (
         <div className="mx-auto max-w-3xl px-4 my-8">
