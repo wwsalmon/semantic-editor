@@ -17,14 +17,15 @@ export default function Home() {
         setSplitDoc(null);
         setIsSaved(true);
 
-        const splitStrings = doc.split(/[\n|\.|\?|\!]+\s*/);
+        const splitPunctuation = Array.from(doc.matchAll(/[\n|\.|\?|\!]+\s*/g));
+        const splitStrings = doc.split(/[\n|\.|\?|\!]+\s*/).map((d, i) => d + (splitPunctuation[i] || "")).filter(d => d);
+        
         setStatus("loading model... (1/2)");
         use.load().then(model => {
             setStatus("computing embeddings... (2/2)")
             model.embed(splitStrings).then(embeddingsTensor => {
                 embeddingsTensor.array().then(arr => {
                     const splitDoc = splitStrings
-                        .filter(d => d)
                         .map((d, i) => ({index: i, text: d, embedding: arr[i]}));
                     setSplitDoc(splitDoc);
                     setStatus("ready");
@@ -52,7 +53,7 @@ export default function Home() {
         });
     }
 
-    const sortedSplitDoc = scores ? [...splitDoc].sort((a, b) => scores[b.index] - scores[a.index]) : splitDoc;
+    const sortedSplitDoc = scores ? [...splitDoc].sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 5) : splitDoc;
 
     return (
         <div className="mx-auto max-w-3xl px-4 my-8">
@@ -76,7 +77,7 @@ export default function Home() {
                                 }}>Reset</button>
                             )}
                             {sortedSplitDoc.map(d => (
-                                <p className="my-6" key={d.index}>{d.text}{scores && `(${scores[d.index]})`}</p>
+                                <p className="my-6" key={d.index}>{d.text}{scores && ` (${scores[d.index]})`}</p>
                             ))}
                             <button className="bg-black p-1 text-white" onClick={() => setIsSaved(false)}>Edit doc</button>
                         </>
