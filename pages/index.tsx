@@ -19,7 +19,7 @@ export default function Home() {
 
         const splitPunctuation = Array.from(doc.matchAll(/[\n|\.|\?|\!]+\s*/g));
         const splitStrings = doc.split(/[\n|\.|\?|\!]+\s*/).map((d, i) => d + (splitPunctuation[i] || "")).filter(d => d);
-        
+
         setStatus("loading model... (1/2)");
         use.load().then(model => {
             setStatus("computing embeddings... (2/2)")
@@ -88,11 +88,12 @@ export default function Home() {
             ) : (
                 <>
                     <div className="w-full">
-                        <div className="p-2 border min-h-[200px]">
-                            <SlateEditor value={doc} setValue={setDoc}/>
+                        <div className="relative my-4">
+                            <textarea value={doc} onChange={e => setDoc(e.target.value)} className="absolute top-0 left-0 right-0 bottom-0 w-full h-full p-2 border overflow-hidden"/>
+                            <p className="min-h-[200px] pointer-events-none p-2 border whitespace-pre-line">{doc}</p>
                         </div>
                     </div>
-                    <button className="bg-black p-1 text-white" onClick={onSave }>Save doc</button>
+                    <button className="bg-black p-1 text-white" onClick={onSave}>Save doc</button>
                 </>
             )}
         </div>
