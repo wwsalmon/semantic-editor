@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.slateEditor p {
+    margin: 16px 0;
+}

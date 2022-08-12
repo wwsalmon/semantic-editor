@@ -7,12 +7,17 @@ export type CustomElement = {
     children: Descendant[],
 }
 
+export type CustomText = {
+    text: string,
+    index: number,
+}
+
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor
 
 declare module "slate" {
     interface CustomTypes {
         Editor: CustomEditor
         Element: CustomElement
-        Text: {text: string}
+        Text: CustomText
     }
 }
