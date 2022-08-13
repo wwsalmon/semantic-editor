@@ -80,7 +80,7 @@ export default function Home() {
         });
     }
 
-    const sortedSplitDoc = scores ? [...docSplit].sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 5) : [];
+    const sortedSplitDoc = scores ? [...docSplit].sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 10) : [];
 
     return (
         <div className="mx-auto max-w-3xl px-4 my-8">
@@ -100,7 +100,7 @@ export default function Home() {
                                     ))}
                                 </p>
                             ))}
-                            <div className="fixed w-80 p-4 right-0 top-0 h-full border-l">
+                            <div className="fixed w-80 p-4 right-0 top-0 h-full border-l overflow-y-auto">
                                 <textarea
                                     className="p-2 border w-full"
                                     placeholder="Semantic search in text"
@@ -114,6 +114,9 @@ export default function Home() {
                                         setScores(null);
                                         setStatus("ready");
                                     }}>Reset</button>
+                                )}
+                                {scores && (
+                                    <p className="my-4">{scores.filter(d => d >= 0.5).length} matches above <code className="text-sm bg-gray-100 p-1 rounded-sm">0.5</code></p>
                                 )}
                                 {sortedSplitDoc.map(d => (
                                     <p className="my-6" key={d.index}>{d.text}{scores && (
