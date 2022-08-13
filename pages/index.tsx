@@ -39,9 +39,9 @@ export default function Home() {
             const isLine = thisString.includes("\n");
             const finalString = thisString.replace(/\n/g, "");
 
-            slateBlock.children.push({text: finalString, index: slateIndex});
+            slateBlock.children.push({text: finalString, index: +slateIndex});
 
-            if (isLine) {
+            if (isLine || +slateIndex === splitStrings.length - 1) {
                 slateDoc.push(slateBlock);
                 slateBlock = JSON.parse(JSON.stringify(slateBlockEmpty));
             }
@@ -110,7 +110,7 @@ export default function Home() {
                                                 {paragraph.children.map(sentence => (
                                                     <span
                                                         key={sentence.index}
-                                                        className={classNames("hover:bg-gray-100 border-box", selectedIndex == sentence.index && "outline outline-2")}
+                                                        className={classNames("hover:bg-gray-100 border-box", selectedIndex === sentence.index && "outline outline-2")}
                                                         style={{
                                                             backgroundColor: scores ? scoreToColor(scores[sentence.index]) : "white",
                                                         }}
@@ -149,7 +149,7 @@ export default function Home() {
                                 <hr className="-mx-4 my-4"/>
                                 {sortedSplitDoc.map(d => (
                                     <button
-                                        className={classNames("block p-4 -mx-4 text-left hover:bg-gray-100", d.index == selectedIndex && "outline outline-2")}
+                                        className={classNames("block p-4 -mx-4 text-left hover:bg-gray-100", d.index === selectedIndex && "outline outline-2")}
                                         key={d.index}
                                         onClick={() => onNavigate(d.index)}
                                     >
