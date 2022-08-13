@@ -1,16 +1,15 @@
-import SlateEditor from "../components/SlateEditor";
 import {useState} from "react";
-const use = require("@tensorflow-models/universal-sentence-encoder");
 import similarity from "compute-cosine-similarity";
 import "@tensorflow/tfjs-backend-webgl";
-import {Descendant} from "slate";
+
+const use = require("@tensorflow-models/universal-sentence-encoder");
 
 export default function Home() {
     const [search, setSearch] = useState<string>("");
     const [isSaved, setIsSaved] = useState<boolean>(false);
     const [docInput, setDocInput] = useState<string>("Hello world");
     const [docSplit, setDocSplit] = useState<{text: string, embedding: number[], index: number}[] | null>(null);
-    const [docSlate, setDocSlate] = useState<Descendant[]>([]);
+    const [docSlate, setDocSlate] = useState<{type: "paragraph", children: {text: string, index: number}[]}[]>([]);
     const [scores, setScores] = useState<number[] | null>(null);
     const [status, setStatus] = useState<string>("ready");
 
@@ -86,7 +85,13 @@ export default function Home() {
                 <>
                     {docSplit ? (
                         <>
-                            <SlateEditor value={docSlate}/>
+                            {docSlate.map((paragraph, i) => (
+                                <p key={i} className="my-8">
+                                    {paragraph.children.map(sentence => (
+                                        <span key={sentence.index} className="hover:bg-gray-100">{sentence.text}</span>
+                                    ))}
+                                </p>
+                            ))}
                             <div className="fixed w-80 p-4 right-0 top-0 h-full border-l">
                                 <textarea
                                     className="p-2 border w-full"
