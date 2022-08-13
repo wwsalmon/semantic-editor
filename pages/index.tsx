@@ -4,6 +4,10 @@ import "@tensorflow/tfjs-backend-webgl";
 
 const use = require("@tensorflow-models/universal-sentence-encoder");
 
+function scoreToColor(score: number) {
+    return `rgba(0,255,0,${(Math.max(score, 0.5) - 0.5) * (1 / 0.5)})`;
+}
+
 export default function Home() {
     const [search, setSearch] = useState<string>("");
     const [isSaved, setIsSaved] = useState<boolean>(false);
@@ -76,7 +80,7 @@ export default function Home() {
         });
     }
 
-    const sortedSplitDoc = scores ? [...docSplit].sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 5) : docSplit;
+    const sortedSplitDoc = scores ? [...docSplit].sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 5) : [];
 
     return (
         <div className="mx-auto max-w-3xl px-4 my-8">
@@ -88,14 +92,18 @@ export default function Home() {
                             {docSlate.map((paragraph, i) => (
                                 <p key={i} className="my-8">
                                     {paragraph.children.map(sentence => (
-                                        <span key={sentence.index} className="hover:bg-gray-100">{sentence.text}</span>
+                                        <span
+                                            key={sentence.index}
+                                            className="hover:bg-gray-100"
+                                            style={{backgroundColor: scores ? scoreToColor(scores[sentence.index]) : "white"}}
+                                        >{sentence.text}</span>
                                     ))}
                                 </p>
                             ))}
                             <div className="fixed w-80 p-4 right-0 top-0 h-full border-l">
                                 <textarea
                                     className="p-2 border w-full"
-                                    placeholder="Search in text"
+                                    placeholder="Semantic search in text"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                 />
@@ -108,7 +116,11 @@ export default function Home() {
                                     }}>Reset</button>
                                 )}
                                 {sortedSplitDoc.map(d => (
-                                    <p className="my-6" key={d.index}>{d.text}{scores && ` (${scores[d.index]})`}</p>
+                                    <p className="my-6" key={d.index}>{d.text}{scores && (
+                                        <span style={{color: scoreToColor(scores[d.index])}}>
+                                            {` (${scores[d.index]})`}
+                                        </span>
+                                    )}</p>
                                 ))}
                             </div>
                             <button className="bg-black p-1 text-white" onClick={() => setIsSaved(false)}>Edit doc</button>
