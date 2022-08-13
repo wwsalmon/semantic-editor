@@ -80,7 +80,7 @@ export default function Home() {
         });
     }
 
-    const sortedSplitDoc = scores ? [...docSplit].sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 10) : [];
+    const sortedSplitDoc = scores ? [...docSplit].filter(d => scores[d.index] >= 0.5).sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 10) : [];
 
     return (
         <div className="mx-auto max-w-3xl px-4 my-8">
@@ -120,7 +120,7 @@ export default function Home() {
                                 )}
                                 {sortedSplitDoc.map(d => (
                                     <p className="my-6" key={d.index}>{d.text}{scores && (
-                                        <span style={{color: scoreToColor(scores[d.index])}}>
+                                        <span style={{backgroundColor: scoreToColor(scores[d.index])}}>
                                             {` (${scores[d.index]})`}
                                         </span>
                                     )}</p>
