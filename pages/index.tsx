@@ -16,6 +16,7 @@ export default function Home() {
     const [docSlate, setDocSlate] = useState<{type: "paragraph", children: {text: string, index: number}[]}[]>([]);
     const [scores, setScores] = useState<number[] | null>(null);
     const [status, setStatus] = useState<string>("ready");
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     function onSave() {
         setScores(null);
@@ -82,6 +83,12 @@ export default function Home() {
 
     const sortedSplitDoc = scores ? [...docSplit].filter(d => scores[d.index] >= 0.5).sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 10) : [];
 
+    function onNavigate(index: number) {
+        const sentenceEl = document.querySelector(`span[data-index="${index}"]`);
+        sentenceEl.scrollIntoView({behavior: "smooth", block: "center"});
+        setSelectedIndex(index);
+    }
+
     return (
         <div className="mx-auto max-w-3xl px-4 my-8">
             <h1 className="font-bold mb-4">Semantic editor</h1>
@@ -94,8 +101,12 @@ export default function Home() {
                                     {paragraph.children.map(sentence => (
                                         <span
                                             key={sentence.index}
-                                            className="hover:bg-gray-100"
-                                            style={{backgroundColor: scores ? scoreToColor(scores[sentence.index]) : "white"}}
+                                            className="hover:bg-gray-100 border-box"
+                                            style={{
+                                                backgroundColor: scores ? scoreToColor(scores[sentence.index]) : "white",
+                                                outline: (selectedIndex == sentence.index) ? "black solid 2px" : "none",
+                                            }}
+                                            data-index={sentence.index}
                                         >{sentence.text}</span>
                                     ))}
                                 </p>
@@ -119,11 +130,13 @@ export default function Home() {
                                     <p className="my-4">{scores.filter(d => d >= 0.5).length} matches above <code className="text-sm bg-gray-100 p-1 rounded-sm">0.5</code></p>
                                 )}
                                 {sortedSplitDoc.map(d => (
-                                    <p className="my-6" key={d.index}>{d.text}{scores && (
-                                        <span style={{backgroundColor: scoreToColor(scores[d.index])}}>
-                                            {` (${scores[d.index]})`}
-                                        </span>
-                                    )}</p>
+                                    <button className="block p-4 -mx-4 text-left hover:bg-gray-100" key={d.index} onClick={() => onNavigate(d.index)}>
+                                        {d.text}{scores && (
+                                            <span style={{backgroundColor: scoreToColor(scores[d.index])}}>
+                                                {` (${scores[d.index]})`}
+                                            </span>
+                                        )}
+                                    </button>
                                 ))}
                             </div>
                             <button className="bg-black p-1 text-white" onClick={() => setIsSaved(false)}>Edit doc</button>
