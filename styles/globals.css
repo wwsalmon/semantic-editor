@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    font-family: "Arial";
+}
+
 .slateEditor p {
     margin: 16px 0;
 }
