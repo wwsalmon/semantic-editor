@@ -82,6 +82,12 @@ export default function Home() {
         });
     }
 
+    function onHome() {
+        setSearch("");
+        setSelectedIndex(null);
+        setIsSaved(false);
+    }
+
     const sortedSplitDoc = scores ? [...docSplit].filter(d => scores[d.index] >= 0.5).sort((a, b) => scores[b.index] - scores[a.index]).slice(0, 10) : [];
 
     function onNavigate(index: number) {
@@ -99,7 +105,7 @@ export default function Home() {
                             <div className="fixed left-0 top-0 h-full overflow-y-auto" style={{width: "calc(100vw - 320px)"}}>
                                 <div className="mx-auto max-w-xl px-4 my-8">
                                     <div className="flex items-center mb-4">
-                                        <button className="text-gray-500 underline" onClick={() => setIsSaved(false)}>Home</button>
+                                        <button className="text-gray-500 underline" onClick={onHome}>Home</button>
                                         <span className="text-gray-500 mx-2">/</span>
                                         <h1 className="font-bold">Your document</h1>
                                     </div>
