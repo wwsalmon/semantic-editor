@@ -2,6 +2,7 @@ import {useState} from "react";
 import similarity from "compute-cosine-similarity";
 import "@tensorflow/tfjs-backend-webgl";
 import classNames from "classnames";
+import Head from "next/head";
 
 const use = require("@tensorflow-models/universal-sentence-encoder");
 
@@ -98,6 +99,9 @@ export default function Home() {
 
     return (
         <div className="mx-auto max-w-2xl px-4 my-8">
+            <Head>
+                <title>Samson's semantic document viewer</title>
+            </Head>
             {isSaved ? (
                 <>
                     {docSplit ? (
